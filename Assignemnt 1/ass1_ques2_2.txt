@@ -1,0 +1,56 @@
+* SkyWater PDK
+* Minimum size CMOS inverter
+* VDD = 1.8 V, Lmin = 0.15um, Wn(min) = 0.42um
+
+.lib /foss/pdks/sky130A/libs.tech/ngspice/sky130.lib.spice tt
+
+*the voltage sources:
+Vdd vdd gnd DC 1.8
+V1 in gnd pulse(0 1.8 0p 20p 10p 1n 2n)
+
+Xnot1 in vdd gnd inter not2
+Xnot2 inter vdd gnd load not1
+
+.subckt not1 a vdd vss z
+xm01 z a vdd vdd sky130_fd_pr__pfet_01v8 l=0.15 w=2 as=0.6 ad=0.6 ps=4.6 pd=4.6
+xm02 z a vss vss sky130_fd_pr__nfet_01v8 l=0.15 w=0.42 as=0.126 ad=0.126 ps=1.44 pd=1.44
+C0 z a 0.2f
+C1 a vdd 0.2f
+C2 z vdd 0.2f
+C3 z vss 0.4f
+C4 a vss 0.6f
+C5 vdd vss 1f
+.ends
+
+.subckt not2 a vdd vss z
+xm01 z a vdd vdd sky130_fd_pr__pfet_01v8 l=0.15 w=4 as=1.2 ad=1.2 ps=8.6 pd=8.6
+xm02 z a vss vss sky130_fd_pr__nfet_01v8 l=0.15 w=0.84 as=0.252 ad=0.252 ps=2.28 pd=2.28
+C0 z a 0.4f
+C1 a vdd 0.4f
+C2 z vdd 0.4f
+C3 z vss 0.8f
+C4 a vss 1f
+C5 vdd vss 2f
+
+.ends
+
+* simulation command:
+.dc V1 0 1.8 0.001
+
+
+.control
+run
+let vin = v(in)
+let vout = v(inter)
+
+* Reference line 1: slope -1 through (0.8, 1.7)
+let slope_line1 = (-1)*(vin - 0.8) + 1.7
+
+* Reference line 2: slope -1 through (1.1, 0.1)
+let slope_line2 = (-1)*(vin - 1.1) + 0.1
+meas dc VM FIND v(in) WHEN v(inter)=v(in) cross=1
+
+* Plot transfer curve + both reference lines
+plot vout vs vin slope_line1 vs vin slope_line2 vs vin\
+     title "Inverter Transfer Curve with -1 Slope Reference Lines"
+.endc
