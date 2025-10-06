@@ -1,0 +1,15 @@
+* NGSPICE file created from assgn2_trial.ext - technology: ihp-sg13g2
+
+.subckt assgn2_trial A vdd vss y
+X0 y A vss vss sg13_lv_nmos ad=0.11159p pd=0.93333u as=0.6315p ps=4.78u w=0.42u l=0.15u
+**devattr s=6720,328 d=6720,328
+X1 y A vdd vdd sg13_lv_pmos ad=0.31881p pd=2.66667u as=1.118p ps=6.42u w=1.2u l=0.15u
+**devattr s=19200,640 d=19200,640
+C0 y A 0.08016f
+C1 y vdd 0.12408f
+C2 vdd A 0.17101f
+C3 y vss 0.21326f
+C4 A vss 0.36721f
+C5 vdd vss 0.20526f
+.ends
+
