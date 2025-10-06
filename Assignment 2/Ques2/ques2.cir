@@ -1,0 +1,36 @@
+* SkyWater PDK
+
+* simple inverter
+
+.lib /foss/pdks/sky130A/libs.tech/ngspice/sky130.lib.spice tt
+
+* the voltage sources:
+
+Vdd vdd gnd DC 1.8
+
+V1 in gnd pulse(0 1.8 0p 20p 20p 1n 2n)
+
+Xnot1 in vdd gnd out not1
+Xnot3 in vdd gnd out not1
+
+Xnot2 out vdd gnd out2 not1
+
+.subckt not1 A vdd vss y
+
+xm02 y A vss vss sky130_fd_pr__nfet_01v8 l=0.15 w=0.42 as=0.126 ad=0.126 ps=1.44 pd=1.44
+xm01 y A vdd vdd sky130_fd_pr__pfet_01v8 l=0.15 w=1.2 as=0.36 ad=0.36 ps=3 pd=3
+.ends
+* simulation command:
+
+.tran 0.01ps 4ns 0 0.02p
+*.dc V1 0 1.8 0.000001
+
+.control
+
+run
+
+*plot out vs in
+wrdata invx2.txt in out
+*wrdata invx2_dc.txt out vs in
+
+.endc
